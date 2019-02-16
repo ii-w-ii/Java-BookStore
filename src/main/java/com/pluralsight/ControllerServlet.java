@@ -46,8 +46,7 @@ public class ControllerServlet extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) {
         String action = request.getPathInfo();
 
         try {
@@ -67,6 +66,9 @@ public class ControllerServlet extends HttpServlet {
                 case "/edit":
                     showEditForm(request, response);
                     break;
+                case "/update":
+                    updateBook(request, response);
+                    break;
                 default:
                     listBooks(request, response);
                     break;
@@ -78,7 +80,7 @@ public class ControllerServlet extends HttpServlet {
     }
 
     private void showBookAdmin(HttpServletRequest request, HttpServletResponse response)
-            throws ClassNotFoundException, SQLException, ServletException, IOException {
+            throws ServletException, IOException {
         ArrayList<Book> books_list = bookDAO.listAllBooks();
 
         request.setAttribute("books", books_list);
@@ -87,7 +89,7 @@ public class ControllerServlet extends HttpServlet {
     }
 
     private void listBooks(HttpServletRequest request, HttpServletResponse response)
-            throws ClassNotFoundException, SQLException, ServletException, IOException {
+            throws ServletException, IOException {
         ArrayList<Book> books_list = bookDAO.listAllBooks();
 
         request.setAttribute("books", books_list);
@@ -102,7 +104,7 @@ public class ControllerServlet extends HttpServlet {
     }
 
     private void insertBook(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException {
+            throws IOException {
         String title = request.getParameter("booktitle");
         String author = request.getParameter("bookauthor");
         String priceString = request.getParameter("bookprice");
@@ -114,7 +116,7 @@ public class ControllerServlet extends HttpServlet {
     }
 
 
-    private void deleteBook(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void deleteBook(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         bookDAO.deleteBook(id);
 
@@ -129,10 +131,23 @@ public class ControllerServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    private void updateBook(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        int id = Integer.parseInt(request.getParameter("id"));
+        String title = request.getParameter("booktitle");
+        String author = request.getParameter("bookauthor");
+        Float price = Float.parseFloat(request.getParameter("bookprice"));
+
+        Book book = new Book(id, title, author, price);
+        bookDAO.updateBook(book);
+        response.sendRedirect("list");
+    }
+
+
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // TODO Auto-generated method stub
         PrintWriter out = response.getWriter();
         out.println("This is the doPost() method!");
